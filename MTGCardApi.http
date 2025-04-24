@@ -1,0 +1,6 @@
+@MTGCardApi_HostAddress = http://localhost:5151
+
+GET {{MTGCardApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,135 @@
+DECLARE @json NVARCHAR(MAX)
+SELECT @json = (select *
+FROM OPENROWSET(BULK 'C:\Users\Matt-PC\Downloads\all-cards-20240908091912.json', SINGLE_CLOB) AS j)
+
+INSERT CardJSONStorage
+Select value from OPENJSON(@json)
+
+TRUNCATE TABLE dbo.MagicCards
+GO
+
+select
+JSON_VALUE(JsonData, '$.id') as id,
+JSON_VALUE(JsonData, '$.name') as name,
+JSON_VALUE(JsonData, '$.lang') as lang,
+JSON_VALUE(JsonData, '$.released_at') as released_at,
+JSON_VALUE(JsonData, '$.uri') as uri,
+JSON_VALUE(JsonData, '$.scryfall_uri') as scryfall_uri,
+JSON_VALUE(JsonData, '$.image_uris.small') as smallimage,
+JSON_VALUE(JsonData, '$.image_uris.normal') as normalimage,
+JSON_VALUE(JsonData, '$.image_uris.large') as largeimage,
+JSON_VALUE(JsonData, '$.image_uris.png') as pngimage,
+JSON_VALUE(JsonData, '$.image_uris.art_crop') as artcropimage,
+JSON_VALUE(JsonData, '$.image_uris.border_crop') as bordercropimage,
+JSON_VALUE(JsonData, '$.mana_cost') as mana_cost,
+JSON_VALUE(JsonData, '$.cmc') as cmc,
+JSON_VALUE(JsonData, '$.type_line') as type_line,
+JSON_VALUE(JsonData, '$.oracle_text') as oracle_text,
+JSON_VALUE(JsonData, '$.power') as [power],
+JSON_VALUE(JsonData, '$.toughness') as toughness,
+JSON_QUERY(JsonData, '$.colors') as colors,
+JSON_QUERY(JsonData, '$.color_identity') as color_identity,
+JSON_QUERY(JsonData, '$.keywords') as keywords,
+JSON_QUERY(JsonData, '$.legalities') as legalities,
+JSON_VALUE(JsonData, '$.set_id') as set_id,
+JSON_VALUE(JsonData, '$.set') as [set],
+JSON_VALUE(JsonData, '$.set_name') as set_name,
+JSON_VALUE(JsonData, '$.set_uri') as set_uri,
+JSON_VALUE(JsonData, '$.scryfall_set_uri') as scryfall_set_uri,
+JSON_VALUE(JsonData, '$.rulings_uri') as rulings_uri,
+JSON_VALUE(JsonData, '$.prints_search_uri') as prints_search_uri,
+JSON_VALUE(JsonData, '$.digital') as digital,
+JSON_VALUE(JsonData, '$.rarity') as rarity,
+JSON_VALUE(JsonData, '$.flavor_text') as flavor_text,
+JSON_VALUE(JsonData, '$.artist') as artist,
+JSON_VALUE(JsonData, '$.border_color') as border_color,
+JSON_VALUE(JsonData, '$.frame') as frame,
+JSON_VALUE(JsonData, '$.full_art') as full_art,
+JSON_VALUE(JsonData, '$.textless') as textless,
+JSON_VALUE(JsonData, '$.booster') as booster
+INTO #Temp
+FROM CardJSONStorage
+
+INSERT dbo.MagicCards
+(
+	[Id], 
+	[Name],
+	[Lang],
+	[ReleaseDate],
+	[CardUri],
+	[ScryfallUri],
+	[SmallImage],
+	[NormalImage],
+	[LargeImage],
+	[PngImage],
+	[ArtCropImage],
+	[BorderCropImage],
+	[ManaCost],
+	[Cmc],
+	[Type],
+	[Text],
+	[Power],
+	[Toughness],
+	[Colors],
+	[ColorIdentity],
+	[Keywords],
+	[Legalities],
+	[SetId],
+	[SetAbbr],
+	[SetName],
+	[SetUri],
+	[ScryfallSetUri],
+	[RulingsUri],
+	[PrintSearchUri],
+	[Digital],
+	[Rarity],
+	[FlavorText],
+	[ArtistName],
+	[BorderColor],
+	[FullArt],
+	[Textless],
+	[Booster]
+)
+SELECT 
+id,
+[name],
+lang,
+released_at,
+uri,
+scryfall_uri,
+smallimage,
+normalimage,
+largeimage,
+pngimage,
+artcropimage,
+bordercropimage,
+mana_cost,
+cmc,
+type_line,
+oracle_text,
+[power],
+toughness,
+colors,
+color_identity,
+keywords,
+legalities,
+set_id,
+[set],
+set_name,
+set_uri,
+scryfall_set_uri,
+rulings_uri,
+prints_search_uri,
+digital,
+rarity,
+flavor_text,
+artist,
+border_color,
+full_art,
+textless,
+booster
+FROM #Temp
+
+
+
+
