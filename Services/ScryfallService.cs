@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using MTGCardApi.Data;
 using MTGCardApi.Dtos;
 using MTGCardApi.Models;
+using MTGCardApi.Responses;
+using Newtonsoft.Json;
 
 namespace MTGCardApi.Services;
 
@@ -18,31 +20,22 @@ public class ScryfallService : IScryfallService
     {
         _httpClient = httpClient;
         _dbContext = dbContext;
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("MTGCardApi/1.0");
+        
     }
+
+    //TODO: Look into creating a background service for this process rather than having its own endpoint
 
     public async Task<string> DownloadScryfallDataAsync(string targetPath)
     {
-        // var response = await _httpClient.GetAsync("https://api.scryfall.com/bulk-data/default_cards");
-        var request = new HttpRequestMessage(HttpMethod.Get, "https://api.scryfall.com/bulk-data/default_cards");
-        var response = await _httpClient.SendAsync(request);
+        var response = await _httpClient.GetAsync("https://api.scryfall.com/bulk-data/default_cards");
+        response.EnsureSuccessStatusCode();
+
         var content = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"Status: {response.StatusCode}");
-        Console.WriteLine($"Response: {content}");
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new HttpRequestException($"Scryfall bulk-data request failed with status code {response.StatusCode}");
-        }
+        var scryfallData = JsonConvert.DeserializeObject<ScryfallBulkDataResponse>(content);        
 
-        using var stream = await response.Content.ReadAsStreamAsync();
-        using var doc = await JsonDocument.ParseAsync(stream);
+        var fileBytes = await _httpClient.GetByteArrayAsync(scryfallData!.DownloadUri);
 
-        var allCardsUrl = doc
-            .RootElement
-            .GetProperty("download_uri")
-            .GetString();
-
-        var fileBytes = await _httpClient.GetByteArrayAsync(allCardsUrl);
+        Console.WriteLine($"fileBytes: {fileBytes}");
         var filePath = Path.Combine(targetPath, "AllCards.json");
         await File.WriteAllBytesAsync(filePath, fileBytes);
 
@@ -59,7 +52,7 @@ public class ScryfallService : IScryfallService
             CardDto? dto = null;
             try
             {
-                dto = JsonSerializer.Deserialize<CardDto>(card.GetRawText());
+                dto = JsonConvert.DeserializeObject<CardDto>(card.GetRawText());
 
             }
             catch (Exception ex)

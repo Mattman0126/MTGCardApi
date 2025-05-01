@@ -32,7 +32,7 @@ public class ScryfallController : ControllerBase
             cardList.Add(card);
         }
 
-        await _scryfallService.SyncCardsAsync(cardList, filePath);
+        //await _scryfallService.SyncCardsAsync(cardList, filePath);
 
         //Do I need to implement any leaf-tables to support this data? Tables containing sets/image uris/artists, etc?
         //reSeedData
