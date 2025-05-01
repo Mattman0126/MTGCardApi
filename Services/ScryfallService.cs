@@ -1,4 +1,5 @@
 
+using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using MTGCardApi.Data;
@@ -25,45 +26,53 @@ public class ScryfallService : IScryfallService
 
     //TODO: Look into creating a background service for this process rather than having its own endpoint
 
-    public async Task<string> DownloadScryfallDataAsync(string targetPath)
+    public async IAsyncEnumerable<CardDto> DownloadScryfallDataAsync()
     {
+        //get object with download url
         var response = await _httpClient.GetAsync("https://api.scryfall.com/bulk-data/default_cards");
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync();
+        
+        //deserialize the download url
         var scryfallData = JsonConvert.DeserializeObject<ScryfallBulkDataResponse>(content);        
 
+        //download the file from scryfall
         var fileBytes = await _httpClient.GetByteArrayAsync(scryfallData!.DownloadUri);
 
-        Console.WriteLine($"fileBytes: {fileBytes}");
-        var filePath = Path.Combine(targetPath, "AllCards.json");
-        await File.WriteAllBytesAsync(filePath, fileBytes);
+        //convert byte array to json string
+        var jsonString = Encoding.UTF8.GetString(fileBytes);
 
-        return filePath;
-    }
+        var cards = JsonConvert.DeserializeObject<List<CardDto>>(jsonString);
 
-    public async IAsyncEnumerable<CardDto> StreamCardsAsync(string filePath)
-    {
-        using var stream = File.OpenRead(filePath);
-        using var doc = await JsonDocument.ParseAsync(stream);
+        //deserialize json into dto objects
+        //foreach (var record in jsonString)
+        //{
+        //    CardDto? dto = null;
 
-        foreach (var card in doc.RootElement.EnumerateArray())
+        //    try
+        //    {
+        //        dto = JsonConvert.DeserializeObject<CardDto>(record.ToString());
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Skipping card due to JSON error: {ex.Message}");
+        //        Console.WriteLine(record.ToString());
+        //    }
+
+        //    if (dto is not null)
+        //        yield return dto;
+        //}
+
+        //deserialize json into dto objects
+        if (cards is not null)
         {
-            CardDto? dto = null;
-            try
+            foreach (var card in cards)
             {
-                dto = JsonConvert.DeserializeObject<CardDto>(card.GetRawText());
-
+                yield return card;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Skipping card due to JSON error: {ex.Message}");
-                Console.WriteLine(card.ToString());
-            }
-            // yield return JsonSerializer.Deserialize<CardDto>(card.GetRawText());
-            if (dto is not null)
-                yield return dto;
         }
+
     }
 
     public async Task SyncCardsAsync(IEnumerable<CardDto> cards, string filePath)

@@ -1,75 +1,74 @@
-using System.Drawing;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using MTGCardApi.Models;
+using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace MTGCardApi.Dtos;
 
 public class CardDto
 {
-    [JsonPropertyName("id")]
+    [JsonProperty("id")]
     public required string Id { get; set; }
-    [JsonPropertyName("name")]
+    [JsonProperty("name")]
     public required string Name { get; set; }
-    [JsonPropertyName("lang")]
+    [JsonProperty("lang")]
     public required string Lang { get; set; }
-    [JsonPropertyName("released_at")]
+    [JsonProperty("released_at")]
     public required string ReleaseDate { get; set; }
-    [JsonPropertyName("uri")]
+    [JsonProperty("uri")]
     public required string Uri { get; set; }
-    [JsonPropertyName("scryfall_uri")]
+    [JsonProperty("scryfall_uri")]
     public required string ScryfallUri { get; set; }
-    [JsonPropertyName("image_uris")]
+    [JsonProperty("image_uris")]
     public ImageUrisDto? ImageUris { get; set; }
-    [JsonPropertyName("mana_cost")]
+    [JsonProperty("mana_cost")]
     public string? ManaCost { get; set; }
-    [JsonPropertyName("cmc")]
+    [JsonProperty("cmc")]
     public double? Cmc { get; set; }
-    [JsonPropertyName("type_line")]
+    [JsonProperty("type_line")]
     public string? TypeLine { get; set; }
-    [JsonPropertyName("oracle_text")]
+    [JsonProperty("oracle_text")]
     public string? Text { get; set; }
-    [JsonPropertyName("power")]
+    [JsonProperty("power")]
     public string? Power { get; set; }
-    [JsonPropertyName("toughness")]
+    [JsonProperty("toughness")]
     public string? Toughness { get; set; }
-    [JsonPropertyName("colors")]
+    [JsonProperty("colors")]
     public string[]? Colors { get; set; }
-    [JsonPropertyName("color_identity")]
+    [JsonProperty("color_identity")]
     public required string[] ColorIdentity { get; set; }
-    [JsonPropertyName("keywords")]
+    [JsonProperty("keywords")]
     public required string[] Keywords { get; set; }
-    [JsonPropertyName("legalities")]
-    public JsonElement Legalities { get; set; }
-    [JsonPropertyName("set_id")]
+    [JsonProperty("legalities")]
+    public required string[] Legalities { get; set; }
+    [JsonProperty("set_id")]
     public required string SetId { get; set; }
-    [JsonPropertyName("set")]
+    [JsonProperty("set")]
     public required string SetAbbr { get; set; }
-    [JsonPropertyName("set_name")]
+    [JsonProperty("set_name")]
     public required string SetName { get; set; }
-    [JsonPropertyName("set_uri")]
+    [JsonProperty("set_uri")]
     public required string SetUri { get; set; }
-    [JsonPropertyName("scryfall_set_uri")]
+    [JsonProperty("scryfall_set_uri")]
     public required string ScryfallSetUri { get; set; }
-    [JsonPropertyName("rulings_uri")]
+    [JsonProperty("rulings_uri")]
     public required string RulingsUri { get; set; }
-    [JsonPropertyName("prints_search_uri")]
+    [JsonProperty("prints_search_uri")]
     public required string PrintSearchUri { get; set; }
-    [JsonPropertyName("digital")]
+    [JsonProperty("digital")]
     public bool Digital { get; set; }
-    [JsonPropertyName("rarity")]
+    [JsonProperty("rarity")]
     public required string Rarity { get; set; }
-    [JsonPropertyName("flavor_text")]
+    [JsonProperty("flavor_text")]
     public string? FlavorText { get; set; }
-    [JsonPropertyName("artist")]
+    [JsonProperty("artist")]
     public required string ArtistName { get; set; }
-    [JsonPropertyName("border_color")]
+    [JsonProperty("border_color")]
     public required string BorderColor { get; set; }
-    [JsonPropertyName("full_art")]
+    [JsonProperty("full_art")]
     public bool FullArt { get; set; }
-    [JsonPropertyName("textless")]
+    [JsonProperty("textless")]
     public bool Textless { get; set; }
-    [JsonPropertyName("booster")]
+    [JsonProperty("booster")]
     public bool Booster { get; set; }
 
     public MagicCard ToEntity()
@@ -94,9 +93,9 @@ public class CardDto
             Text = Text,
             Power = Power,
             Toughness = Toughness,
-            Colors = Colors != null ? JsonSerializer.Serialize(Colors) : null,
-            ColorIdentity = JsonSerializer.Serialize(ColorIdentity),
-            Keywords = JsonSerializer.Serialize(Keywords),
+            Colors = Colors != null ? JsonConvert.SerializeObject(Colors) : null,
+            ColorIdentity = JsonConvert.SerializeObject(ColorIdentity),
+            Keywords = JsonConvert.SerializeObject(Keywords),
             Legalities = Legalities.GetRawText(),
             SetId = Guid.Parse(SetId),
             SetAbbr = SetAbbr,
@@ -151,10 +150,10 @@ public class CardDto
            Text == entity.Text &&
            Power == entity.Power &&
            Toughness == entity.Toughness &&
-           JsonSerializer.Serialize(Colors) == entity.Colors &&
-           JsonSerializer.Serialize(ColorIdentity) == entity.ColorIdentity &&
-           JsonSerializer.Serialize(Keywords) == entity.Keywords &&
-           JsonSerializer.Serialize(Legalities) == entity.Legalities &&
+           JsonConvert.SerializeObject(Colors) == entity.Colors &&
+           JsonConvert.SerializeObject(ColorIdentity) == entity.ColorIdentity &&
+           JsonConvert.SerializeObject(Keywords) == entity.Keywords &&
+           JsonConvert.SerializeObject(Legalities) == entity.Legalities &&
            Guid.TryParse(SetId, out var parsedSetId) && parsedSetId == entity.SetId &&
            SetAbbr == entity.SetAbbr &&
            SetName == entity.SetName &&

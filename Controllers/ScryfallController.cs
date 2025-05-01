@@ -16,18 +16,15 @@ public class ScryfallController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> RefreshCardData([FromBody] bool reSeedData)
+    public async Task<IActionResult> RefreshCardDataFromBulkFile([FromBody] bool reSeedData)
     {
-        var path = Path.Combine(Path.GetTempPath(), "scryfallData");
+        //var path = Path.Combine(Path.GetTempPath(), "scryfallData");
         //TODO: Update to download and process file from more local directory. Use environment variable
 
-        Directory.CreateDirectory(path);
-
-        var filePath = await _scryfallService.DownloadScryfallDataAsync(path);
-        var cards = _scryfallService.StreamCardsAsync(filePath);
+        //Directory.CreateDirectory(path);
 
         var cardList = new List<CardDto>();
-        await foreach (var card in cards)
+        await foreach (var card in _scryfallService.DownloadScryfallDataAsync())
         {
             cardList.Add(card);
         }
@@ -39,4 +36,7 @@ public class ScryfallController : ControllerBase
 
         return Ok("Sync Complete");
     }
+
+    //TODO: Add endpoint to refresh data from scryfall via their API so I can utilize pagination for improved performance.
+
 }

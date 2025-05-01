@@ -4,7 +4,6 @@ namespace MTGCardApi.Services;
 
 public interface IScryfallService
 {
-    Task<string> DownloadScryfallDataAsync(string targetPath);
-    IAsyncEnumerable<CardDto> StreamCardsAsync(string filePath);
+    IAsyncEnumerable<CardDto> DownloadScryfallDataAsync();
     Task SyncCardsAsync(IEnumerable<CardDto> cards, string filePath);
 }
