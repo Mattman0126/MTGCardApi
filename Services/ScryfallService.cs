@@ -1,12 +1,11 @@
 
-using System.Text;
-using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using MTGCardApi.Data;
 using MTGCardApi.Dtos;
 using MTGCardApi.Models;
 using MTGCardApi.Responses;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace MTGCardApi.Services;
 
@@ -46,25 +45,6 @@ public class ScryfallService : IScryfallService
         var cards = JsonConvert.DeserializeObject<List<CardDto>>(jsonString);
 
         //deserialize json into dto objects
-        //foreach (var record in jsonString)
-        //{
-        //    CardDto? dto = null;
-
-        //    try
-        //    {
-        //        dto = JsonConvert.DeserializeObject<CardDto>(record.ToString());
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Skipping card due to JSON error: {ex.Message}");
-        //        Console.WriteLine(record.ToString());
-        //    }
-
-        //    if (dto is not null)
-        //        yield return dto;
-        //}
-
-        //deserialize json into dto objects
         if (cards is not null)
         {
             foreach (var card in cards)
@@ -72,20 +52,18 @@ public class ScryfallService : IScryfallService
                 yield return card;
             }
         }
-
     }
 
-    public async Task SyncCardsAsync(IEnumerable<CardDto> cards, string filePath)
+    public async Task SyncCardsAsync(IEnumerable<CardDto> cards)
     {
+        //TODO: Update to compare and update/insert records X at a time OR look into utilizing efcore bulkextensions
+
+        //Get all cards from DB for comparisons
         var existingIds = new HashSet<Guid>(await _dbContext.MagicCards.Select(c => c.Id).ToListAsync());
 
-        var idsToUpdate = cards
-            .Where(dto => Guid.TryParse(dto.Id, out var id) && existingIds.Contains(id))
-            .Select(dto => Guid.Parse(dto.Id))
-            .ToHashSet();
-
+        //identify cards needing updates
         var existingCards = await _dbContext.MagicCards
-            .Where(c => idsToUpdate.Contains(c.Id))
+            .Where(c => existingIds.Contains(c.Id))
             .ToDictionaryAsync(c => c.Id);
 
         var newCards = new List<MagicCard>();
@@ -96,18 +74,31 @@ public class ScryfallService : IScryfallService
             if (!Guid.TryParse(cardDto.Id, out var parsedId))
                 continue; //skip invalid Ids
 
-            if (!existingIds.Contains(parsedId))
-            {
-                var newCard = cardDto.ToEntity();
-                newCards.Add(newCard);
-            }
-            else if (existingCards.TryGetValue(parsedId, out var existingCard))
+            //if (!existingIds.Contains(parsedId))
+            //{
+            //    var newCard = cardDto.ToEntity();
+            //    newCards.Add(newCard);
+            //}
+            //else if (existingCards.TryGetValue(parsedId, out var existingCard))
+            //{
+            //    if (!cardDto.EqualsEntity(existingCard))
+            //    {
+            //        existingCard.UpdateFromDto(cardDto);
+            //        updatedCards.Add(existingCard);
+            //    }
+            //}
+
+            if (existingCards.TryGetValue(parsedId, out var existingCard))
             {
                 if (!cardDto.EqualsEntity(existingCard))
                 {
                     existingCard.UpdateFromDto(cardDto);
                     updatedCards.Add(existingCard);
                 }
+            }
+            else
+            {
+                newCards.Add(cardDto.ToEntity());
             }
         }
         if (newCards.Any())
@@ -118,16 +109,5 @@ public class ScryfallService : IScryfallService
 
         await _dbContext.SaveChangesAsync();
 
-        try
-        {
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Could not delete file: {ex.Message}");
-        }
     }
 }

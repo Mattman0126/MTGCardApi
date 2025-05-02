@@ -7,7 +7,7 @@ namespace MTGCardApi.Dtos;
 public class CardDto
 {
     [JsonProperty("id")]
-    public required string Id { get; set; }
+    public required string Id { get; set; }//TODO: Update to guid
     [JsonProperty("name")]
     public required string Name { get; set; }
     [JsonProperty("lang")]
@@ -39,7 +39,7 @@ public class CardDto
     [JsonProperty("keywords")]
     public required string[] Keywords { get; set; }
     [JsonProperty("legalities")]
-    public required string[] Legalities { get; set; }
+    public required LegalitiesDto Legalities { get; set; }
     [JsonProperty("set_id")]
     public required string SetId { get; set; }
     [JsonProperty("set")]
@@ -96,7 +96,7 @@ public class CardDto
             Colors = Colors != null ? JsonConvert.SerializeObject(Colors) : null,
             ColorIdentity = JsonConvert.SerializeObject(ColorIdentity),
             Keywords = JsonConvert.SerializeObject(Keywords),
-            Legalities = Legalities.GetRawText(),
+            Legalities = JsonConvert.SerializeObject(Legalities),
             SetId = Guid.Parse(SetId),
             SetAbbr = SetAbbr,
             SetName = SetName,
