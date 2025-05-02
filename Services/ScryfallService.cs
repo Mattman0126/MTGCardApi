@@ -74,20 +74,6 @@ public class ScryfallService : IScryfallService
             if (!Guid.TryParse(cardDto.Id, out var parsedId))
                 continue; //skip invalid Ids
 
-            //if (!existingIds.Contains(parsedId))
-            //{
-            //    var newCard = cardDto.ToEntity();
-            //    newCards.Add(newCard);
-            //}
-            //else if (existingCards.TryGetValue(parsedId, out var existingCard))
-            //{
-            //    if (!cardDto.EqualsEntity(existingCard))
-            //    {
-            //        existingCard.UpdateFromDto(cardDto);
-            //        updatedCards.Add(existingCard);
-            //    }
-            //}
-
             if (existingCards.TryGetValue(parsedId, out var existingCard))
             {
                 if (!cardDto.EqualsEntity(existingCard))
