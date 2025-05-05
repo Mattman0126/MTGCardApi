@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+//using EFCore.BulkExtensions;
 using MTGCardApi.Data;
 using MTGCardApi.Dtos;
 using MTGCardApi.Models;
@@ -93,7 +94,12 @@ public class ScryfallService : IScryfallService
         if (updatedCards.Any())
             _dbContext.MagicCards.UpdateRange(updatedCards);
 
+        //if (cards.Any())
+        //    await _dbContext.BulkMergeAsync(newCards);
+
         await _dbContext.SaveChangesAsync();
 
     }
+
+
 }

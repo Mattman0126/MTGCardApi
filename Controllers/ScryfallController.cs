@@ -18,6 +18,7 @@ public class ScryfallController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> RefreshCardDataFromBulkFile([FromBody] bool reSeedData)
     {
+        DateTime before = DateTime.Now;
         var cardList = new List<CardDto>();
         await foreach (var card in _scryfallService.DownloadScryfallDataAsync())
         {
@@ -26,9 +27,12 @@ public class ScryfallController : ControllerBase
 
         await _scryfallService.SyncCardsAsync(cardList);
 
+        DateTime after = DateTime.Now;
+
+        Console.WriteLine($"Before: {before}, After: {after}");
+
         return Ok("Sync Complete");
     }
 
     //TODO: Add endpoint to refresh data from scryfall via their API so I can utilize pagination for improved performance.
-
 }
