@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using MTGCardApi.Data;
-using MTGCardApi.Models.Cards;
-using MTGCardApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +16,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<CardDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// builder.Services.AddScoped<ICardRepository, CardRepository>();
-// builder.Services.AddScoped<IMagicCardService, MagicCardService>();
-// builder.Services.AddHttpClient<IScryfallService, ScryfallService>();
+
 builder.Services.AddApplicationServices();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
