@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MTGCardApi.Data.EntityConfigurations;
 using MTGCardApi.Models;
 
 namespace MTGCardApi.Data;
@@ -13,6 +14,8 @@ public class CardDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new CardEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new DeckEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new DeckCardConfiguration());
     }
     public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
     {

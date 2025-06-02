@@ -7,7 +7,7 @@ public class MagicDeckController
      * TODO:
      * 
      * - Create endpoint
-     *   - Creates a MagicDeck record
+     *   - Upsert a MagicDeck record
      *   - Create request object for creating a MagicDeck. Ensure Cards is nullable.
      * 
      * - Update deck Endpoint
