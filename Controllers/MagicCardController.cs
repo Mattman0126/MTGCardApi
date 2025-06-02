@@ -53,4 +53,6 @@ public class MagicCardController : ControllerBase
 
         return Ok(cards);
     }
+
+    //TODO: Create the following endpoints: GetCardImages by CardID
 }
