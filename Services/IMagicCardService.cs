@@ -4,7 +4,8 @@ namespace MTGCardApi.Services;
 
 public interface IMagicCardService
 {
-    Task<MagicCard?> GetById(Guid id);
-    Task<IEnumerable<MagicCard>> GetByName(string nameQuery);
-    Task<IEnumerable<MagicCard>> GetBySetName(string setNameQuery);
+    Task<Dictionary<Guid, MagicCard>> GetAllAsync();
+    Task<Dictionary<Guid, MagicCard>> GetById(Guid id);
+    Task<Dictionary<Guid, MagicCard>> GetByName(string nameQuery);
+    Task<Dictionary<Guid, MagicCard>> GetBySetName(string setNameQuery);
 }

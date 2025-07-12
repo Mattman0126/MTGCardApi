@@ -9,16 +9,26 @@ namespace MTGCardApi.Controllers;
 [Route("[controller]")]
 public class MagicCardController : ControllerBase
 {
-    private readonly IMagicCardService _magicCardService;
+    private readonly IMagicCardService _service;
     public MagicCardController(IMagicCardService magicCardService, IScryfallService scryfallService)
     {
-        _magicCardService = magicCardService;
+        _service = magicCardService;
+    }
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllAsync()
+    {
+        var result = await _service.GetAllAsync();
+        if (result == null)
+        {
+            return NotFound();
+        }
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCardById([FromRoute] Guid id)
     {
-        var card = await _magicCardService.GetById(id);
+        var card = await _service.GetById(id);
         if (card == null)
         {
             return NotFound();
@@ -33,10 +43,9 @@ public class MagicCardController : ControllerBase
         {
             return BadRequest();
         }
-        Console.WriteLine("nameQuery= " + nameQuery);
-        var card = await _magicCardService.GetByName(nameQuery);
+        
+        var card = await _service.GetByName(nameQuery);
 
-        Console.WriteLine("card= " + card.FirstOrDefault()?.Name);
         return Ok(card);
 
     }
@@ -48,8 +57,8 @@ public class MagicCardController : ControllerBase
         {
             return BadRequest();
         }
-        Console.WriteLine("setNameQuery= " + setNameQuery);
-        var cards = await _magicCardService.GetBySetName(setNameQuery);
+
+        var cards = await _service.GetBySetName(setNameQuery);
 
         return Ok(cards);
     }

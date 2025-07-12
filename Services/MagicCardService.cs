@@ -13,20 +13,25 @@ public class MagicCardService : IMagicCardService
         _repository = repository;
     }
 
-    public async Task<MagicCard?> GetById(Guid id)
+    public async Task<Dictionary<Guid, MagicCard>> GetById(Guid id)
     {
-        return await _repository.GetAsync(id, new CancellationToken());
+        return await _repository.GetByIDAsync(id, new CancellationToken());
     }
 
-    public async Task<IEnumerable<MagicCard>> GetByName(string nameQuery)
+    public async Task<Dictionary<Guid, MagicCard>> GetByName(string nameQuery)
     {
-        return await _repository.GetByNameAsync(nameQuery, CancellationToken.None);
+        return await _repository.GetByNameAsync(nameQuery, new CancellationToken());
 
     }
 
-    public async Task<IEnumerable<MagicCard>> GetBySetName(string setNameQuery)
+    public async Task<Dictionary<Guid, MagicCard>> GetBySetName(string setNameQuery)
     {
-        return await _repository.GetBySetAsync(setNameQuery, CancellationToken.None);
+        return await _repository.GetBySetAsync(setNameQuery, new CancellationToken());
+    }
+
+    async Task<Dictionary<Guid, MagicCard>> IMagicCardService.GetAllAsync()
+    {
+        return await _repository.GetAllAsync(new CancellationToken());
     }
 
     // public static List<MagicCard>? GetCardsByPartialName(string query) { }

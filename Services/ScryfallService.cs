@@ -1,8 +1,6 @@
-
-using Microsoft.EntityFrameworkCore;
-using MTGCardApi.Data;
 using MTGCardApi.Dtos;
 using MTGCardApi.Models;
+using MTGCardApi.Models.Cards;
 using MTGCardApi.Responses;
 using Newtonsoft.Json;
 using System.Text;
@@ -12,14 +10,14 @@ namespace MTGCardApi.Services;
 public class ScryfallService : IScryfallService
 {
     private readonly HttpClient _httpClient;
-    private readonly CardDbContext _dbContext;
+    private readonly ICardRepository _cardRepository;
     //private readonly ILogger<ScryfallService> _logger;
     // private readonly IWebHostEnvironment _env;
 
-    public ScryfallService(HttpClient httpClient, CardDbContext dbContext)
+    public ScryfallService(HttpClient httpClient, ICardRepository cardRepository)
     {
         _httpClient = httpClient;
-        _dbContext = dbContext;
+        _cardRepository = cardRepository;
         
     }
 
@@ -58,13 +56,7 @@ public class ScryfallService : IScryfallService
     {
         //TODO: Update to compare and update/insert records X at a time OR look into utilizing efcore bulkextensions
 
-        //Get all cards from DB for comparisons
-        var existingIds = new HashSet<Guid>(await _dbContext.MagicCards.Select(c => c.Id).ToListAsync());
-
-        //identify cards needing updates
-        var existingCards = await _dbContext.MagicCards
-            .Where(c => existingIds.Contains(c.Id))
-            .ToDictionaryAsync(c => c.Id);
+        var existingCards = await _cardRepository.GetAllAsync(CancellationToken.None); 
 
         var newCards = new List<MagicCard>();
         var updatedCards = new List<MagicCard>();
@@ -87,17 +79,13 @@ public class ScryfallService : IScryfallService
                 newCards.Add(cardDto.ToEntity());
             }
         }
+
         if (newCards.Any())
-            _dbContext.MagicCards.AddRange(newCards);
+            Console.WriteLine($"Cards inserted: {newCards.Count}");
+            await _cardRepository.BulkInsertAsync(newCards);
 
         if (updatedCards.Any())
-            _dbContext.MagicCards.UpdateRange(updatedCards);
-
-
-
-        await _dbContext.SaveChangesAsync();
-
+            Console.WriteLine($"Cards updated: {updatedCards.Count}");
+            await _cardRepository.BulkUpdateAsync(updatedCards);
     }
-
-
 }
