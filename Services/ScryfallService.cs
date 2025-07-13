@@ -1,7 +1,7 @@
 using MTGCardApi.Dtos;
+using MTGCardApi.Dtos.Responses;
 using MTGCardApi.Models;
 using MTGCardApi.Models.Cards;
-using MTGCardApi.Responses;
 using Newtonsoft.Json;
 using System.Text;
 

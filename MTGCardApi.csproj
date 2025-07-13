@@ -8,18 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Responses\CardResponses\**" />
-    <Compile Remove="Responses\DeckResponses\**" />
-    <Content Remove="Responses\CardResponses\**" />
-    <Content Remove="Responses\DeckResponses\**" />
-    <EmbeddedResource Remove="Responses\CardResponses\**" />
-    <EmbeddedResource Remove="Responses\DeckResponses\**" />
-    <None Remove="Responses\CardResponses\**" />
-    <None Remove="Responses\DeckResponses\**" />
+    <Compile Remove="Dtos\Responses\CardResponses\**" />
+    <Compile Remove="Dtos\Responses\DeckResponses\**" />
+    <Content Remove="Dtos\Responses\CardResponses\**" />
+    <Content Remove="Dtos\Responses\DeckResponses\**" />
+    <EmbeddedResource Remove="Dtos\Responses\CardResponses\**" />
+    <EmbeddedResource Remove="Dtos\Responses\DeckResponses\**" />
+    <None Remove="Dtos\Responses\CardResponses\**" />
+    <None Remove="Dtos\Responses\DeckResponses\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="MTGCardApi.Tests\MTGCardApi.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EFCore.BulkExtensions" Version="9.0.1" />
+    <PackageReference Include="FluentAssertions" Version="8.5.0" />
     <PackageReference Include="FluentResults" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
@@ -31,6 +36,11 @@
     <PackageReference Include="MongoDB.Driver" Version="3.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MTGCardApi.Tests\ControllerTests\" />
   </ItemGroup>
 
 </Project>

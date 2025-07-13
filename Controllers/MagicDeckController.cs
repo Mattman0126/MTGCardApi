@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MTGCardApi.Requests;
+using MTGCardApi.Dtos.Requests;
 using MTGCardApi.Services;
 
 namespace MTGCardApi.Controllers;

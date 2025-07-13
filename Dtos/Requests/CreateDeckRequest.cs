@@ -1,6 +1,6 @@
 ﻿using MTGCardApi.Models.Decks;
 
-namespace MTGCardApi.Requests;
+namespace MTGCardApi.Dtos.Requests;
 
 public record CreateDeckRequest
 {

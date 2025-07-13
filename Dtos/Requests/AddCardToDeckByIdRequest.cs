@@ -1,4 +1,4 @@
-﻿namespace MTGCardApi.Requests;
+﻿namespace MTGCardApi.Dtos.Requests;
 
 public record AddCardToDeckByIdRequest
 {

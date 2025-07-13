@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace MTGCardApi.Responses;
+namespace MTGCardApi.Dtos.Responses;
 
 public class ScryfallBulkDataResponse
 {
