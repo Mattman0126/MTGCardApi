@@ -48,9 +48,16 @@ internal class CardRepository : ICardRepository
         return result;
     }
 
-    public Task<Dictionary<Guid, MagicCard>> GetByIDAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<MagicCard?> GetByIDAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var result = await _cards.Find(c => c.Id == id).FirstOrDefaultAsync(cancellationToken);
+
+        if(result is null)
+        {
+            return null;
+        }
+
+        return result;
     }
 
     public async Task<Dictionary<Guid, MagicCard>> GetByNameAsync(string searchQuery, CancellationToken cancellationToken)

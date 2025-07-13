@@ -22,7 +22,7 @@ public class MagicDeck
 
 
 }
-public class DeckCardEntry
+public record DeckCardEntry
 {
     [BsonId]
     [BsonRepresentation(MongoDB.Bson.BsonType.String)]

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MTGCardApi.Requests;
 using MTGCardApi.Services;
 
@@ -23,8 +22,6 @@ public class MagicDeckController : ControllerBase
      * 
      * - Delete deck endpoint
      * 
-     * - Add Card(s) to deck
-     * 
      * - Remove Card(s) from deck
      * 
      * */
@@ -42,7 +39,7 @@ public class MagicDeckController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateDeckEntryAsync([FromBody] CreateDeckRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateDeckEntryAsync([FromBody] CreateDeckRequest request)
     {
         if (!Enum.IsDefined(typeof(DeckFormat), request.Format))
         {
@@ -54,8 +51,16 @@ public class MagicDeckController : ControllerBase
             description: request.Description,
             format: request.Format,
             commanderId: request.CommanderId,
-            cancellationToken);
+            new CancellationToken());
 
         return Created();
+    }
+
+    [HttpPut("addCard")]
+    public async Task<IActionResult> AddCardById([FromBody] AddCardToDeckByIdRequest request)
+    {
+        var result = await _service.AddCardById(request.MagicDeckId, request.MagicCardId, request.Quantity, request.Obtained, new CancellationToken());
+
+        return Ok(result);
     }
 }

@@ -1,4 +1,5 @@
-﻿using MTGCardApi.Models.Decks;
+﻿using MTGCardApi.Models;
+using MTGCardApi.Models.Decks;
 using MTGCardApi.Requests;
 
 namespace MTGCardApi.Mapping;
@@ -15,4 +16,5 @@ public static class ContractMapping
     //        Commander = request.CommanderId
     //    }
     //}
+
 }

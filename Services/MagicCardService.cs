@@ -13,7 +13,7 @@ public class MagicCardService : IMagicCardService
         _repository = repository;
     }
 
-    public async Task<Dictionary<Guid, MagicCard>> GetById(Guid id)
+    public async Task<MagicCard> GetById(Guid id)
     {
         return await _repository.GetByIDAsync(id, new CancellationToken());
     }

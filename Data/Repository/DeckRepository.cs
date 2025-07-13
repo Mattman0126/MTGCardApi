@@ -21,9 +21,27 @@ internal class DeckRepository : IDeckRepository
         return result.ToDictionary(c => c.Id);
     }
 
+    public async Task<MagicDeck?> GetByIdAsync(Guid deckId, CancellationToken cancellationToken)
+    {
+        var result = await _decks.Find(c => c.Id == deckId).FirstOrDefaultAsync();
+
+        if (result is null)
+        {
+            return null;
+        }
+
+        return result;
+    }
+
     public async Task<Guid> CreateDeckAsync(MagicDeck magicDeck)
     {
         await _decks.InsertOneAsync(magicDeck);
         return magicDeck.Id;
+    }
+
+    public async Task<MagicDeck> UpdateAsync(MagicDeck magicDeck, CancellationToken cancellationToken)
+    {
+        await _decks.ReplaceOneAsync(deck => deck.Id == magicDeck.Id, magicDeck);
+        return magicDeck;
     }
 }
