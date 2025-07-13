@@ -1,4 +1,6 @@
-﻿using MTGCardApi.Models;
+﻿using FluentResults;
+using MTGCardApi.Errors;
+using MTGCardApi.Models;
 using MTGCardApi.Models.Cards;
 using MTGCardApi.Models.Decks;
 
@@ -19,13 +21,18 @@ public class MagicDeckService : IMagicDeckService
         return await _deckRepository.GetAllAsync(cancellationToken);
     }
 
-    public async Task<Guid> CreateDeckEntryAsync(string name, string description, DeckFormat format, Guid? commanderId, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> CreateDeckEntryAsync(string name, string description, DeckFormat format, Guid? commanderId, CancellationToken cancellationToken)
     {
         MagicCard? commanderCard = null;
 
         if (commanderId.HasValue)
         {
             commanderCard = await _cardRepository.GetAsync(commanderId.Value, cancellationToken);
+        }
+
+        if (commanderCard == null)
+        {
+            return MagicCardError.CardNotFound(commanderId!.Value);
         }
 
         var deckEntry = new MagicDeck
@@ -44,18 +51,18 @@ public class MagicDeckService : IMagicDeckService
         return result;
     }
 
-    public async Task<MagicDeck?> AddCardById(Guid deckId, Guid cardId, int quantity, bool obtained, CancellationToken cancellationToken)
+    public async Task<Result<MagicDeck?>> AddCardById(Guid deckId, Guid cardId, int quantity, bool obtained, CancellationToken cancellationToken)
     {
         var magicDeck = await _deckRepository.GetByIdAsync(deckId, cancellationToken);
         if (magicDeck is null)
         {
-            return null;//TODO: refactor to return a DeckNotFound exception
+            return MagicDeckError.DeckNotFound(deckId);
         }
         
         var magicCard = await _cardRepository.GetByIDAsync(cardId, cancellationToken);
         if (magicCard is null)
         {
-            return null;//TODO: refactor to return a cardNotFound exception
+            return MagicCardError.CardNotFound(cardId);
         }
 
         DeckCardEntry deckCardEntry = new DeckCardEntry
@@ -67,7 +74,7 @@ public class MagicDeckService : IMagicDeckService
 
         if (magicDeck.Cards.Contains(deckCardEntry))
         {
-            return null;//TODO: refactor to return a CardAlreadyInDeck exception
+            return MagicDeckError.CardAlreadyExists(deckId, cardId);
         }
 
         magicDeck.Cards.Add(deckCardEntry);
