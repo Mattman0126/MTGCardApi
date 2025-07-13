@@ -1,4 +1,5 @@
-using MTGCardApi.Data;
+using FluentResults;
+using MTGCardApi.Errors;
 using MTGCardApi.Models;
 using MTGCardApi.Models.Cards;
 
@@ -13,27 +14,32 @@ public class MagicCardService : IMagicCardService
         _repository = repository;
     }
 
-    public async Task<MagicCard> GetById(Guid id)
+    public async Task<Result<MagicCard>> GetById(Guid id)
     {
-        return await _repository.GetByIDAsync(id, new CancellationToken());
+        var result =  await _repository.GetByIDAsync(id, new CancellationToken());
+
+        if (result is null)
+        {
+            return MagicCardError.CardNotFound(id);
+        }
+
+        return result;
     }
 
-    public async Task<Dictionary<Guid, MagicCard>> GetByName(string nameQuery)
+    public async Task<Result<Dictionary<Guid, MagicCard>>> GetByName(string nameQuery)
     {
-        return await _repository.GetByNameAsync(nameQuery, new CancellationToken());
+        var result = await _repository.GetByNameAsync(nameQuery, new CancellationToken());
 
+        return result;
     }
 
-    public async Task<Dictionary<Guid, MagicCard>> GetBySetName(string setNameQuery)
+    public async Task<Result<Dictionary<Guid, MagicCard>>> GetBySetName(string setNameQuery)
     {
         return await _repository.GetBySetAsync(setNameQuery, new CancellationToken());
     }
 
-    async Task<Dictionary<Guid, MagicCard>> IMagicCardService.GetAllAsync()
+    public async Task<Result<Dictionary<Guid, MagicCard>>> GetAllAsync()
     {
         return await _repository.GetAllAsync(new CancellationToken());
     }
-
-    // public static List<MagicCard>? GetCardsByPartialName(string query) { }
-
 }
